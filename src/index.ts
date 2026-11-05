@@ -1,19 +1,19 @@
-import { createServer } from "node:http";
+import express, {
+  type NextFunction,
+  type Request,
+  type Response,
+} from 'express';
+import { db } from './prisma/db';
 
-import { listUsers } from "./prisma/users";
+const app = express();
+app.use(express.json());
 
-const port = Number(process.env.PORT ?? 3000);
+app.post('/api/metrics', async (req: Request, res: Response) => {
+  const metrics = req.body;
+  console.log('Received metrics:', metrics);
+  res.json({ received: true });
+});
 
-createServer(async (_request, response) => {
-  try {
-    const users = await listUsers();
-    response.writeHead(200, { "content-type": "application/json" });
-    response.end(JSON.stringify({ users }));
-  } catch (error) {
-    console.error("Failed to query users:", error);
-    response.writeHead(500, { "content-type": "application/json" });
-    response.end(JSON.stringify({ error: "Could not query users yet." }));
-  }
-}).listen(port, "0.0.0.0", () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen('3000', () => {
+  console.log('lsitenign on port 3000');
 });
